@@ -11,7 +11,7 @@ require('dotenv').config()
 // middle wear
 
 app.use(cors())
-app.use(express())
+app.use(express.json())
 
 
 
@@ -34,16 +34,17 @@ async function run() {
 
 
         app.post('/product', async (req, res) => {
-            const products = req.body;
-            if (!products.name || !products.price || !products.image || !products.pdQuentity || !products.spName || !products.pdDetails) {
+            const product = req.body;
+            console.log(product);
+            if (!product.name || !product.price || !product.image || !product.quentity || !product.SPName || !product.details) {
                 return res.send({ success: false, error: `Please Provide All Information` })
             }
-            const result = await productCollection.insertOne(products);
-            res.send({ success: true, message: `SuccesFully Added ${products.name}` })
+            const result = await productCollection.insertOne(product);
+            res.send({ success: true, message: `SuccesFully Added ${product.name}` })
 
         })
 
-
+        //  || !product.pdDetails
 
         // app.post('/products', async (req, res) => {
         //     const product = req.body;
@@ -59,15 +60,15 @@ async function run() {
 
 
 
-        // app.get('/products', async (req, res) => {
-        //     const cursor = productCollection.find();
-        //     const products = await cursor.toArray();
+        app.get('/product', async (req, res) => {
+            const cursor = productCollection.find();
+            const product = await cursor.toArray();
 
-        //     if (!products?.length) {
-        //         return res.send({ success: false, error: `No Product Found` })
-        //     }
-        //     res.send({ success: true, data: products });
-        // })
+            if (!product?.length) {
+                return res.send({ success: false, error: `No Product Found` })
+            }
+            res.send({ success: true, data: product });
+        })
 
 
 
