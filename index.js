@@ -44,32 +44,29 @@ async function run() {
 
         })
 
-        //  || !product.pdDetails
-
-        // app.post('/products', async (req, res) => {
-        //     const product = req.body;
-        //     if (!product.name || !product.price) {
-        //         return res.send({ success: false, error: `Please Provide All Information` })
-        //     }
-        //     const result = await productCollection.insertOne(product);
-        //     console.log(result);
-        //     res.send({ success: true, message: `Succesfully Added ${product.name}` })
-
-        // })
-
-
 
 
         app.get('/product', async (req, res) => {
-            const cursor = productCollection.find();
-            const product = await cursor.toArray();
+            const email = req.query;
+            console.log(email);
+            if (email) {
+                console.log(email);
+                const cursor = productCollection.find(req.query);
+                const product = await cursor.toArray();
+                if (!product?.length) {
+                    return res.send({ success: false, error: `No Product Found` })
+                }
+                res.send({ success: true, data: product });
+            } else {
+                const cursor = productCollection.find();
+                const product = await cursor.toArray();
 
-            if (!product?.length) {
-                return res.send({ success: false, error: `No Product Found` })
+                if (!product?.length) {
+                    return res.send({ success: false, error: `No Product Found` })
+                }
+                res.send({ success: true, data: product });
             }
-            res.send({ success: true, data: product });
         })
-
 
 
 
@@ -90,32 +87,6 @@ async function run() {
 
             res.send({ success: true, data: product });
         })
-
-
-
-
-        // app.get('/items', async (req, res) => {
-        //     const query = req.query;
-        //     if (query) {
-        //         const cursor = collection.find(req.query);
-        //         const result = await cursor.toArray();
-        //         res.send(result)
-        //     }
-        //     else {
-        //         const query = {};
-        //         const cursor = collection.find(query);
-        //         const result = await cursor.toArray();
-        //         res.send(result)
-        //     }
-        // })
-
-
-
-
-
-
-
-
 
     } catch (error) {
         console.log(error);
