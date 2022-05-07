@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -73,13 +73,46 @@ async function run() {
 
 
 
-        // app.post('/products/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) }
-        //     const result = await productCollection.deleteOne(query);
-        //     res.send(result)
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const product = await productCollection.deleteOne(query);
+            res.send({ success: true, data: product });
+        })
 
+
+
+        app.get('/product', async (req, res) => {
+            const query = req.query;
+            const cursor = collection.find(query);
+            const product = await cursor.toArray();
+
+
+            res.send({ success: true, data: product });
+        })
+
+
+
+
+        // app.get('/items', async (req, res) => {
+        //     const query = req.query;
+        //     if (query) {
+        //         const cursor = collection.find(req.query);
+        //         const result = await cursor.toArray();
+        //         res.send(result)
+        //     }
+        //     else {
+        //         const query = {};
+        //         const cursor = collection.find(query);
+        //         const result = await cursor.toArray();
+        //         res.send(result)
+        //     }
         // })
+
+
+
+
+
 
 
 
