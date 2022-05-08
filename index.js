@@ -36,10 +36,10 @@ async function run() {
         app.post('/product', async (req, res) => {
             const product = req.body;
             console.log(product);
-            if (!product.name || !product.price || !product.image || !product.quentity || !product.SPName || !product.details) {
+            if (!product.name || !product.price || !product.image || !product.quantity || !product.SPName || !product.details) {
                 return res.send({ success: false, error: `Please Provide All Information` })
             }
-            const result = await productCollection.insertOne(product);
+            await productCollection.insertOne(product);
             res.send({ success: true, message: `SuccesFully Added ${product.name}` })
 
         })
@@ -48,9 +48,7 @@ async function run() {
 
         app.get('/product', async (req, res) => {
             const email = req.query;
-            console.log(email);
             if (email) {
-                console.log(email);
                 const cursor = productCollection.find(req.query);
                 const product = await cursor.toArray();
                 if (!product?.length) {
@@ -70,12 +68,46 @@ async function run() {
 
 
 
+
         app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const product = await productCollection.deleteOne(query);
             res.send({ success: true, data: product });
         })
+
+
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const cursor = productCollection.find(query);
+            const product = await cursor.toArray();
+            res.send({ success: true, data: product });
+        })
+
+
+
+
+        app.put('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            console.log(data);
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            console.log(options);
+            const updateDoc = {
+                $set: {
+                    quantity: data.quantity
+                },
+            };
+            console.log(updateDoc);
+            const product = await productCollection.updateOne(filter, updateDoc, options);
+            res.send({ success: true, data: product });
+            console.log(result);
+        })
+
+
+
 
 
 
