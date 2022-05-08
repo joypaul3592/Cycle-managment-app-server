@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000
 require('dotenv').config()
-
+const jwt = require('jsonwebtoken');
 
 
 
@@ -35,12 +35,22 @@ async function run() {
 
         app.post('/product', async (req, res) => {
             const product = req.body;
-            console.log(product);
-            if (!product.name || !product.price || !product.image || !product.quantity || !product.SPName || !product.details) {
-                return res.send({ success: false, error: `Please Provide All Information` })
+            const accessToken = req.body.token;
+            const email = product.email;
+            console.log(email);
+            const decoded = verifyToken(accessToken);
+            console.log(decoded.email);
+            if (email === decoded.email) {
+
+                if (!product.name || !product.price || !product.image || !product.quantity || !product.SPName || !product.details) {
+                    return res.send({ success: false, error: `Please Provide All Information` })
+                }
+                await productCollection.insertOne(product);
+                res.send({ success: true, message: `SuccesFully Added ${product.name}` })
             }
-            await productCollection.insertOne(product);
-            res.send({ success: true, message: `SuccesFully Added ${product.name}` })
+            else {
+                res.send({ success: 'UnAuthoraized Access' })
+            }
 
         })
 
@@ -91,19 +101,25 @@ async function run() {
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
-            console.log(data);
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
-            console.log(options);
             const updateDoc = {
                 $set: {
                     quantity: data.quantity
                 },
             };
-            console.log(updateDoc);
             const product = await productCollection.updateOne(filter, updateDoc, options);
             res.send({ success: true, data: product });
-            console.log(result);
+        })
+
+        // (require('crypto').randomBytes(256).toString('base64')
+
+
+        // jwt
+        app.post('/login', async (req, res) => {
+            const email = req.body;
+            const token = jwt.sign(email, process.env.ACCESS_TOKEN);
+            res.send({ token });
         })
 
 
@@ -115,8 +131,6 @@ async function run() {
             const query = req.query;
             const cursor = collection.find(query);
             const product = await cursor.toArray();
-
-
             res.send({ success: true, data: product });
         })
 
@@ -137,3 +151,18 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`listing to the port Of : `, port);
 })
+
+
+
+// verify token
+function verifyToken(token) {
+    let email;
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            email = 'Invalid Email'
+        }
+        if (decoded) {
+            email = decoded
+        }
+    })
+}
