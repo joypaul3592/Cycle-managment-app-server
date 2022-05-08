@@ -115,17 +115,12 @@ async function run() {
         // (require('crypto').randomBytes(256).toString('base64')
 
 
-        // jwt
+        // jwt verification
         app.post('/login', async (req, res) => {
             const email = req.body;
             const token = jwt.sign(email, process.env.ACCESS_TOKEN);
             res.send({ token });
         })
-
-
-
-
-
 
         app.get('/product', async (req, res) => {
             const query = req.query;
