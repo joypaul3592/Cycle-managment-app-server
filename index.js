@@ -112,8 +112,6 @@ async function run() {
             res.send({ success: true, data: product });
         })
 
-        // (require('crypto').randomBytes(256).toString('base64')
-
 
         // jwt verification
         app.post('/login', async (req, res) => {
