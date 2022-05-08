@@ -37,9 +37,9 @@ async function run() {
             const product = req.body;
             const accessToken = req.body.token;
             const email = product.email;
-            console.log(email);
             const decoded = verifyToken(accessToken);
             console.log(decoded.email);
+
             if (email === decoded.email) {
 
                 if (!product.name || !product.price || !product.image || !product.quantity || !product.SPName || !product.details) {
@@ -116,6 +116,7 @@ async function run() {
         // jwt verification
         app.post('/login', async (req, res) => {
             const email = req.body;
+            console.log(email);
             const token = jwt.sign(email, process.env.ACCESS_TOKEN);
             res.send({ token });
         })
@@ -158,4 +159,5 @@ function verifyToken(token) {
             email = decoded
         }
     })
+    return email;
 }
